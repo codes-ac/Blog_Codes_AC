@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
 from .models import Contact
 from django.contrib import messages
 from blog.models import Post
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 def index(request):
     return render(request, 'home/index.html')
@@ -39,3 +41,62 @@ def search(request):
             postContent = Post.objects.filter(content__icontains=search)
             post = postTitle.union(postContent)
     return render(request, 'home/seacrh.html', {'post':post, 'query':search})
+
+
+def signup(request):
+    if request.method == 'POST':
+        fname = request.POST['fname']
+        lname = request.POST['lname']
+        email = request.POST['email']
+        username = request.POST['userName']
+        pass1 = request.POST['pass1']
+        pass2 = request.POST['pass2']
+
+        all = [fname, lname,email,username,pass1,pass2]
+        if all == []:
+            messages.success(request,'Your Codes_AC Account has been successfully created')
+            return redirect('home')
+
+
+        if len(username)>10:
+            messages.error(request,'Sign up  Failed, username is too long...')
+            return redirect('home')
+        
+        if pass1 != pass2:
+            messages.error(request,'Sign Up failed, password does not match...')
+            return redirect('home')
+
+
+        myuser = User.objects.create_user(username, email, pass1)
+        myuser.first_name = fname
+        myuser.last_name = lname
+        myuser.save()
+        messages.success(request,'Your Codes_AC Account has been successfully created')
+        return redirect('home')
+
+    else:
+        return HttpResponse('404 Not Found')
+
+
+def userlogin(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['pass']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            messages.success(request,'Successfully Logged In')
+            return redirect('home')
+
+        else:
+            messages.error(request,'Invalid Credentials...')
+            return redirect('home')
+
+    return HttpResponse('404 Not Found')
+
+def userlogout(request):
+    logout(request)
+    messages.success(request,'Successfully Logged Out')
+    return redirect('home')
+
+
+    

@@ -9,3 +9,4 @@ def blogHome(request):
 def blogPost(request, slug):
     post = Post.objects.filter(slug=slug)
     return render(request, 'blog/blogPost.html',{'post':post})
+    
