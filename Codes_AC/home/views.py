@@ -84,6 +84,7 @@ def userlogin(request):
         password = request.POST['pass']
         user = authenticate(username=username, password=password)
         if user is not None:
+            login(request,user)
             messages.success(request,'Successfully Logged In')
             return redirect('home')
 
