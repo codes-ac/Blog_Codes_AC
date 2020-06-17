@@ -19,6 +19,10 @@ class BlogComment(models.Model):
     comment = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     timestamp = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return self.comment[0:10] +"... by "+ self.user.username
+    
     
